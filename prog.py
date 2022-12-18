@@ -29,6 +29,7 @@ FOLDER = "./noBAvs2BA"
 
 medieAck = []
 mediaNoAck = None
+allBaRuns = []
 
 plt.rcParams.update({'font.size': 22})
 plt.xlabel('xlabel', fontsize=18)
@@ -60,7 +61,7 @@ for i in range(1,11):
     print("Comparing NoBA run with " + str(i*2)+"BA run")
 
 
-    ###########################################################################
+    ###########################################################################  CREO I GRAFICI SENZA BLOCK ACK
 
     fig = plt.figure(figsize=(12, 6)) 
     makePlot(fig,graphsNoBA,MIN,MAX,'Raw Data')
@@ -77,9 +78,10 @@ for i in range(1,11):
     fig.savefig(FOLDER + 'avgNoAck.png')
     plt.close(fig)
 
-    ###########################################################################
+    ########################################################################### CREO I GRAFICI CON IL BLOCK ACK
 
     graphsBA = parseVectors(yesBA)
+    allBaRuns.append(graphsBA)
 
     fig = plt.figure(figsize=(12, 6)) 
     makePlot(fig,graphsBA,MIN,MAX,'Raw Data')
@@ -107,7 +109,7 @@ for i in range(1,11):
     fig.savefig(FOLDER + 'avgAck.png')
     plt.close(fig)
 
-    ###########################################################################
+    ########################################################################### COMPARO BA CON NoBA
 
 
     fig = plt.figure(figsize=(12, 6))
@@ -119,7 +121,7 @@ for i in range(1,11):
     plt.close(fig)
 
 
-###############################################################################
+############################################################################### COMPARO LE VARIE Block Ack RUNS
 
 
 fig = plt.figure(figsize=(12, 6))
@@ -147,7 +149,22 @@ plt.plot(range(0,24,2) ,[sum(avgNoBA[1])/len(avgNoBA[1])]*12,color = 'black')
 plt.savefig('barChart.png')
 plt.close(figure)
 
+############################################################################### CONFIDENCE INTERVALS
 
+
+
+
+figure = plt.figure(figsize=(12, 6))
+plt.xticks([2,4,6,8,10,12,14,16,18,20])
+plt.title('Confidence Interval')
+for i in range(1,11):
+    sumOfAll = []
+    for n in allBaRuns[i-1][1]:
+        sumOfAll = sumOfAll +n
+    plotConfidenceInterval(i*2, sumOfAll)
+    print(len(sumOfAll))
+plt.savefig('confidence.png')
+plt.close(figure)
 
 
 
