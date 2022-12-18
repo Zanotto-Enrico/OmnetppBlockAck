@@ -26,7 +26,7 @@ SMOOTH_CONST = 5
 MIN = 2000000
 MAX = 4500000
 FOLDER = "./noBAvs2BA"
-RUNS = [2,4,6,8,10,12,14,16,18,20]
+RUNS = [2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32]
 
 medieAck = []
 mediaNoAck = None
@@ -137,14 +137,14 @@ medieDelleMedie = []
 for g in medieAck:
     medieDelleMedie.append(sum(g[1])/len(g[1]))
 
-figure = plt.figure(figsize=(12, 6))
+figure = plt.figure(figsize=(13, 6))
 plt.ylim([2500000, 4000000])
 plt.suptitle('Comparison of BA sessions', fontsize=24)
 plt.xticks(RUNS)
-colors = ['green', 'blue', 'purple', 'brown', 'teal', 'pink', 'red', 'orange', 'green', 'grey']
-plt.bar(range(2,22,2),medieDelleMedie, color = colors)
+colors = ['green', 'blue', 'purple', 'brown', 'teal', 'pink', 'red', 'orange', 'green', 'grey','green', 'blue', 'purple', 'brown', 'teal']
+plt.bar(range(2,34,2),medieDelleMedie, color = colors)
 
-plt.plot(range(0,24,2) ,[sum(avgNoBA[1])/len(avgNoBA[1])]*12,color = 'black')
+plt.plot(range(0,34,2) ,[sum(avgNoBA[1])/len(avgNoBA[1])]*17,color = 'black')
 
 
 plt.savefig('barChart.png')
@@ -158,7 +158,7 @@ plt.close(figure)
 figure = plt.figure(figsize=(12, 6))
 plt.xticks(RUNS)
 plt.title('Confidence Interval')
-for i in range(1,11):
+for i in range(1,len(RUNS)+1):
     sumOfAll = []
     for n in allBaRuns[i-1]:
         sumOfAll = sumOfAll +n[1]
