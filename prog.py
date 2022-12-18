@@ -9,7 +9,7 @@ from functions import *
 # prima studio il cambiamento usando pacchetti da 700B
 #
 # confronto quindi NoBA con BA utilizzando un thrashold 
-# di attesa di frames di {2,4,6,8,10,12,16,18,20}
+# di attesa di frames di {2,4,6,8,10,12,16,18,20,22,24,26,28,30,32}
 # in simulazioni di 6 secondi 
 #
 # confronto tutti i threshold nei 6 secondi in un grafico mostro
@@ -26,6 +26,7 @@ SMOOTH_CONST = 5
 MIN = 2000000
 MAX = 4500000
 FOLDER = "./noBAvs2BA"
+RUNS = [2,4,6,8,10,12,14,16,18,20]
 
 medieAck = []
 mediaNoAck = None
@@ -52,7 +53,7 @@ avgNoBA = avgGraph(smoothedNoBA)
 
 
 
-for i in range(1,11):
+for i in range(1,len(RUNS)+1):
 
     yesBA = pd.read_csv("./csv/BlockAck" +str(i*2)+".csv")
     FOLDER = FOLDER = "./noBAvs"+str(i*2)+"BA/"
@@ -139,7 +140,7 @@ for g in medieAck:
 figure = plt.figure(figsize=(12, 6))
 plt.ylim([2500000, 4000000])
 plt.suptitle('Comparison of BA sessions', fontsize=24)
-plt.xticks([2,4,6,8,10,12,14,16,18,20])
+plt.xticks(RUNS)
 colors = ['green', 'blue', 'purple', 'brown', 'teal', 'pink', 'red', 'orange', 'green', 'grey']
 plt.bar(range(2,22,2),medieDelleMedie, color = colors)
 
@@ -155,14 +156,13 @@ plt.close(figure)
 
 
 figure = plt.figure(figsize=(12, 6))
-plt.xticks([2,4,6,8,10,12,14,16,18,20])
+plt.xticks(RUNS)
 plt.title('Confidence Interval')
 for i in range(1,11):
     sumOfAll = []
-    for n in allBaRuns[i-1][1]:
-        sumOfAll = sumOfAll +n
-    plotConfidenceInterval(i*2, sumOfAll)
-    print(len(sumOfAll))
+    for n in allBaRuns[i-1]:
+        sumOfAll = sumOfAll +n[1]
+    plotConfidenceInterval(i*2, sumOfAll, z=1.96)
 plt.savefig('confidence.png')
 plt.close(figure)
 
