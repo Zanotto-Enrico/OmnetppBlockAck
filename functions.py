@@ -11,7 +11,7 @@ def smoothGraph(graph, w):
     
 
 def avgGraph(graphs):
-    newgraph = (graphs[0][0],[])
+    newgraph = [graphs[0][0],[]]
 
     for i in range(0,len(newgraph[0])):
         sum = 0
@@ -25,11 +25,11 @@ def avgGraph(graphs):
 
 
 
-def parseVectors(csv):
+def parseVectors(csv,startPoint=0):
     graphs = []
 
     for vector in csv["vecvalue"]:
-        graph = ([],[])
+        graph = [[],[]]
         number = ""
 
         for value in vector:
@@ -38,7 +38,7 @@ def parseVectors(csv):
                 number = ""
             else:
                 number = number + value
-        
+        graph[1] = graph[1][startPoint:]
         graphs.append(graph)
 
     i = 0
@@ -52,8 +52,8 @@ def parseVectors(csv):
                 number = ""
             else:
                 number = number + value
+        graph[0] = graph[0][startPoint:]
         i= i+1
-        graphs.append(graph)
 
     return graphs
 

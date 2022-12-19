@@ -22,7 +22,7 @@ from functions import *
 #
 ##---------------------------------------------------------------##
 
-SMOOTH_CONST = 5
+SMOOTH_CONST = 10
 MIN = 2000000
 MAX = 4500000
 FOLDER = "./noBAvs2BA"
@@ -131,7 +131,13 @@ fig.savefig('ComparisonAllAvg.png')
 plt.close(fig)
 
 
-###############################################################################
+############################################################################### SCARTO I PRIMI 2 SECONDI (e l'ultimo decimo)
+
+for i in range(0,len(RUNS)):
+    medieAck[i][1] = medieAck[i][1][20:-1]
+    medieAck[i][0] = medieAck[i][0][20:-1]
+
+############################################################################### CREO IL GRAFICO A BARRE
 
 medieDelleMedie = []
 for g in medieAck:
@@ -155,7 +161,7 @@ plt.close(figure)
 
 
 
-figure = plt.figure(figsize=(12, 6))
+figure = plt.figure(figsize=(12, 12))
 plt.xticks(RUNS)
 plt.title('Confidence Interval')
 for i in range(1,len(RUNS)+1):
