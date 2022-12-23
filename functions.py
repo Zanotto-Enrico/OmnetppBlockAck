@@ -34,7 +34,7 @@ def parseVectors(csv,startPoint=0):
 
         for value in vector:
             if value == " ":
-                graph[1].append(float(number))
+                graph[1].append(float(number)/1000000)
                 number = ""
             else:
                 number = number + value

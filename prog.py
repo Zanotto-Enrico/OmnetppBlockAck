@@ -2,175 +2,183 @@ import pandas as pd
 from matplotlib import pyplot as plt
 import numpy as np
 from math import *
+import os
 from functions import *
 
-##---------------------------------------------------------------##
+##-------------------------------------------------------------------------##
 #
 # prima studio il cambiamento usando pacchetti da 700B
 #
 # confronto quindi NoBA con BA utilizzando un thrashold 
-# di attesa di frames di {2,4,6,8,10,12,16,18,20,22,24,26,28,30,32}
+# di attesa di frames di {4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64}
 # in simulazioni di 6 secondi 
 #
 # confronto tutti i threshold nei 6 secondi in un grafico mostro
 # in un histogramma le medie del loro throughput nei 6 secondi
 #
-# poi procedo e comincio a variare la dimensione dei frames
+# poi procedo e comincio a variare la frammentazione dei pacchetti
 # e vedo quale configurazione ne rimette di più
 #
-# devo poi inventarmi qualcosa anche per la frammentazione
-#
-##---------------------------------------------------------------##
+##-------------------------------------------------------------------------##
 
-SMOOTH_CONST = 10
-MIN = 2000000
-MAX = 4500000
-FOLDER = "./noBAvs2BA"
-RUNS = [2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32]
+SMOOTH_CONST = 5                                                    # smoothing constant
+MAX = 37                                                            # lower bound for graphs
+MIN = 7                                                            # higher bound for graphs
+CSW_FOLDER = "./csv/"                                               # csv main folder location
+GRAPHS_FOLDER = "./graphs/"                                         # graphs folder location
+BA_THRESHOLDS = [4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64]     # All the BlockAck Thresholds tested
+PKT_LENGTHS =[100,300,500,700,1000,1500,2000]                       # All the UDP segment size tested
 
-medieAck = []
-mediaNoAck = None
-allBaRuns = []
+
 
 plt.rcParams.update({'font.size': 22})
 plt.xlabel('xlabel', fontsize=18)
 plt.ylabel('ylabel', fontsize=16)
 
-noBA = pd.read_csv("./csv/noBlockAck.csv")
 
-###############################
+for pkt_length in PKT_LENGTHS:
 
-graphsNoBA = parseVectors(noBA)
-
-smoothedNoBA = []
-for graph in graphsNoBA:
-    smoothedNoBA.append(smoothGraph(graph,SMOOTH_CONST))
-
-avgNoBA = avgGraph(smoothedNoBA)
-
-###############################
-
-
-
-
-for i in range(1,len(RUNS)+1):
-
-    yesBA = pd.read_csv("./csv/BlockAck" +str(i*2)+".csv")
-    FOLDER = FOLDER = "./noBAvs"+str(i*2)+"BA/"
-
-    
-    print("Comparing NoBA run with " + str(i*2)+"BA run")
-
-
-    ###########################################################################  CREO I GRAFICI SENZA BLOCK ACK
-
-    fig = plt.figure(figsize=(12, 6)) 
-    makePlot(fig,graphsNoBA,MIN,MAX,'Raw Data')
-    fig.savefig(FOLDER + 'normalNoAck.png')
-    plt.close(fig)
-
-    fig = plt.figure(figsize=(12, 6))
-    makePlot(fig,smoothedNoBA,MIN,MAX,'Smoothed')
-    fig.savefig(FOLDER + 'smoothedNoAck.png')
-    plt.close(fig)
-
-    fig = plt.figure(figsize=(12, 6))
-    makePlot(fig,[avgNoBA],MIN,MAX,'Average')
-    fig.savefig(FOLDER + 'avgNoAck.png')
-    plt.close(fig)
-
-    ########################################################################### CREO I GRAFICI CON IL BLOCK ACK
-
-    graphsBA = parseVectors(yesBA)
-    allBaRuns.append(graphsBA)
-
-    fig = plt.figure(figsize=(12, 6)) 
-    makePlot(fig,graphsBA,MIN,MAX,'Raw Data')
-    fig.savefig(FOLDER + 'normalAck.png')
-    plt.close(fig)
+    medieAck = []
+    mediaNoAck = None
+    allBaRuns = []
+    noBA = pd.read_csv(CSW_FOLDER+str(pkt_length)+"B/noBlockAck.csv")
 
     ###############################
 
-    smoothedBA = []
-    for graph in graphsBA:
-        smoothedBA.append(smoothGraph(graph,SMOOTH_CONST))
+    graphsNoBA = parseVectors(noBA)
 
-    fig = plt.figure(figsize=(12, 6))
-    makePlot(fig,smoothedBA,MIN,MAX,'Smoothed')
-    fig.savefig(FOLDER + 'smoothedAck.png')
-    plt.close(fig)
+    smoothedNoBA = []
+    for graph in graphsNoBA:
+        smoothedNoBA.append(smoothGraph(graph,SMOOTH_CONST))
+
+    avgNoBA = avgGraph(smoothedNoBA)
 
     ###############################
 
-    avgBA = avgGraph(smoothedBA)
-    medieAck.append(avgBA)
+    for ba_threshold in BA_THRESHOLDS:
+
+        yesBA = pd.read_csv("./csv/"+str(pkt_length)+"B/BlockAck" +str(ba_threshold)+".csv")
+        GRAPHS_FOLDER = "./graphs/"+str(pkt_length)+"B/noBAvs"+str(ba_threshold)+"BA/"
+
+        if not os.path.exists(GRAPHS_FOLDER):
+            os.makedirs(GRAPHS_FOLDER)
+        
+        print("Comparing NoBA run with " + str(ba_threshold)+"BA run with packets len of " + str(pkt_length))
+
+
+        ###########################################################################  GRAPHS WITHOUT BLOCK ACK
+
+        fig = plt.figure(figsize=(12, 6)) 
+        makePlot(fig,graphsNoBA,MIN,MAX,'Raw Data')                         # graph of all the runs without changes
+        fig.savefig(GRAPHS_FOLDER + 'normalNoAck.png')
+        plt.close(fig)
+
+        fig = plt.figure(figsize=(12, 6))
+        makePlot(fig,smoothedNoBA,MIN,MAX,'Smoothed')                       # graph of all the runs smoothed using
+        fig.savefig(GRAPHS_FOLDER + 'smoothedNoAck.png')                           # the SMOOTH_CONST constant
+        plt.close(fig)
+
+        fig = plt.figure(figsize=(12, 6))
+        makePlot(fig,[avgNoBA],MIN,MAX,'Average')                           # graph of a line rapresenting the average
+        fig.savefig(GRAPHS_FOLDER + 'avgNoAck.png')                                # of all the runs
+        plt.close(fig)
+
+        ########################################################################### GRAPHS WITH BLOCK ACK
+
+        graphsBA = parseVectors(yesBA)
+        allBaRuns.append(graphsBA)
+
+        fig = plt.figure(figsize=(12, 6)) 
+        makePlot(fig,graphsBA,MIN,MAX,'Raw Data')                           # graph of all the runs without changes
+        fig.savefig(GRAPHS_FOLDER + 'normalAck.png')
+        plt.close(fig)
+
+        ###############################
+
+        smoothedBA = []
+        for graph in graphsBA:                                              # smoothing every graph
+            smoothedBA.append(smoothGraph(graph,SMOOTH_CONST))
+
+        fig = plt.figure(figsize=(12, 6))
+        makePlot(fig,smoothedBA,MIN,MAX,'Smoothed')                         # graph of all the runs smoothed using
+        fig.savefig(GRAPHS_FOLDER + 'smoothedAck.png')                             # the SMOOTH_CONST constant
+        plt.close(fig)
+
+        ###############################
+
+        avgBA = avgGraph(smoothedBA)                                        # calculating the averages
+        medieAck.append(avgBA)
+
+        fig = plt.figure(figsize=(12, 6))
+        makePlot(fig,[avgBA],MIN,MAX,'Average')                             # graph of a line rapresenting the average
+        fig.savefig(GRAPHS_FOLDER + 'avgAck.png')                                  # of all the runs
+        plt.close(fig)
+
+        ########################################################################### COMPARING BA RUNS WITH NoBA RUNS
+
+
+        fig = plt.figure(figsize=(12, 6))
+        plt.plot(avgBA[0] ,avgBA[1])
+        plt.plot(avgNoBA[0] ,avgNoBA[1])
+        plt.ylim([MIN, MAX])
+        plt.suptitle('Comparison', fontsize=24)                             # graph comparing the average of the runs
+        plt.savefig(GRAPHS_FOLDER + 'Comparison.png')                              # with BlockAck to those without it 
+        plt.close(fig)
+
+
+    ############################################################################### COMPARO LE VARIE Block Ack RUNS
+
 
     fig = plt.figure(figsize=(12, 6))
-    makePlot(fig,[avgBA],MIN,MAX,'Average')
-    fig.savefig(FOLDER + 'avgAck.png')
-    plt.close(fig)
-
-    ########################################################################### COMPARO BA CON NoBA
+    makePlot(fig,medieAck,MIN,MAX,'Comparison of BA sessions')              # graph with the avereges of all the runs
+    fig.savefig("./graphs/"+str(pkt_length)+"B/ComparisonAllAvg.png")       # by time based on the BA_THRESHOLDS
+    plt.close(fig)                                                           
 
 
-    fig = plt.figure(figsize=(12, 6))
-    plt.plot(avgBA[0] ,avgBA[1])
-    plt.plot(avgNoBA[0] ,avgNoBA[1])
-    plt.ylim([MIN, MAX])
-    plt.suptitle('Comparison', fontsize=24)
-    plt.savefig(FOLDER + 'Comparison.png')    
-    plt.close(fig)
+    ############################################################################### SCARTO I PRIMI 2 E L'ULTIMO VALORE
+
+    for i in range(0,len(BA_THRESHOLDS)):
+        medieAck[i][1] = medieAck[i][1][2:-1]
+        medieAck[i][0] = medieAck[i][0][2:-1]
+
+    ############################################################################### CREO IL GRAFICO A BARRE
+
+    medieDelleMedie = []
+    for g in medieAck:
+        medieDelleMedie.append(sum(g[1])/len(g[1]))
+
+    figure = plt.figure(figsize=(13, 6))
+    #plt.ylim([2500000, 4000000])
+    plt.ylim([MIN, MAX])                                                       # bar graph with the avereges of all the runs
+    plt.suptitle('Comparison of BA sessions', fontsize=24)                     # based on the BA_THRESHOLDS
+    plt.xticks(BA_THRESHOLDS)                                                           # added a line rappresenting the average of the
+    colors = ['green', 'blue', 'purple',                                       # runs without BlockAck for comparison
+              'brown', 'teal', 'pink', 
+              'red', 'orange', 'green', 
+              'grey','green', 'blue', 
+              'purple', 'brown', 'teal']
+    plt.bar(range(4,65,4),medieDelleMedie, color = colors)
+
+    plt.plot(range(0,69,4) ,[sum(avgNoBA[1])/len(avgNoBA[1])]*18,color = 'black')
 
 
-############################################################################### COMPARO LE VARIE Block Ack RUNS
+    plt.savefig("./graphs/"+str(pkt_length)+"B/barChart.png")
+    plt.close(figure)
+
+    ############################################################################### CONFIDENCE INTERVALS
 
 
-fig = plt.figure(figsize=(12, 6))
-makePlot(fig,medieAck,MIN,MAX,'Comparison of BA sessions')
-fig.savefig('ComparisonAllAvg.png')
-plt.close(fig)
+    figure = plt.figure(figsize=(12, 12))
+    plt.xticks(BA_THRESHOLDS)
+    plt.title('Confidence Interval')
+    for i in range(1,len(BA_THRESHOLDS)+1):
+        sumOfAll = []                                                           # ToDo
+        for n in allBaRuns[i-1]:
+            sumOfAll = sumOfAll +n[1]
+        plotConfidenceInterval(i*4, sumOfAll, z=1.96)
+    plt.savefig("./graphs/"+str(pkt_length)+"B/confidence.png")
+    plt.close(figure)
 
-
-############################################################################### SCARTO I PRIMI 2 SECONDI (e l'ultimo decimo)
-
-for i in range(0,len(RUNS)):
-    medieAck[i][1] = medieAck[i][1][20:-1]
-    medieAck[i][0] = medieAck[i][0][20:-1]
-
-############################################################################### CREO IL GRAFICO A BARRE
-
-medieDelleMedie = []
-for g in medieAck:
-    medieDelleMedie.append(sum(g[1])/len(g[1]))
-
-figure = plt.figure(figsize=(13, 6))
-plt.ylim([2500000, 4000000])
-plt.suptitle('Comparison of BA sessions', fontsize=24)
-plt.xticks(RUNS)
-colors = ['green', 'blue', 'purple', 'brown', 'teal', 'pink', 'red', 'orange', 'green', 'grey','green', 'blue', 'purple', 'brown', 'teal']
-plt.bar(range(2,34,2),medieDelleMedie, color = colors)
-
-plt.plot(range(0,34,2) ,[sum(avgNoBA[1])/len(avgNoBA[1])]*17,color = 'black')
-
-
-plt.savefig('barChart.png')
-plt.close(figure)
-
-############################################################################### CONFIDENCE INTERVALS
-
-
-
-
-figure = plt.figure(figsize=(12, 12))
-plt.xticks(RUNS)
-plt.title('Confidence Interval')
-for i in range(1,len(RUNS)+1):
-    sumOfAll = []
-    for n in allBaRuns[i-1]:
-        sumOfAll = sumOfAll +n[1]
-    plotConfidenceInterval(i*2, sumOfAll, z=1.96)
-plt.savefig('confidence.png')
-plt.close(figure)
 
 
 
