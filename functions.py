@@ -57,11 +57,12 @@ def parseVectors(csv,startPoint=0):
 
     return graphs
 
-def makePlot(figure, graphs, min, max, title):
+def makePlot(figure, graphs, title,min=None, max=None):
     plot = figure.add_subplot()
     for graph in graphs:
         plot.plot(graph[0],graph[1])
-    plot.set_ylim([min, max])
+    if(min and max):
+        plot.set_ylim([min, max])
     plot.title.set_text(title)
     return 
 
