@@ -69,17 +69,17 @@ for pkt_length in PKT_LENGTHS:
         ###########################################################################  GRAPHS WITHOUT BLOCK ACK
 
         fig = plt.figure(figsize=(12, 6)) 
-        makePlot(fig,graphsNoBA,MIN,MAX,'Raw Data')                         # graph of all the runs without changes
+        makePlot(fig,graphsNoBA,'Raw Data')                         # graph of all the runs without changes
         fig.savefig(GRAPHS_FOLDER + 'normalNoAck.png')
         plt.close(fig)
 
         fig = plt.figure(figsize=(12, 6))
-        makePlot(fig,smoothedNoBA,MIN,MAX,'Smoothed')                       # graph of all the runs smoothed using
+        makePlot(fig,smoothedNoBA,'Smoothed')                       # graph of all the runs smoothed using
         fig.savefig(GRAPHS_FOLDER + 'smoothedNoAck.png')                           # the SMOOTH_CONST constant
         plt.close(fig)
 
         fig = plt.figure(figsize=(12, 6))
-        makePlot(fig,[avgNoBA],MIN,MAX,'Average')                           # graph of a line rapresenting the average
+        makePlot(fig,[avgNoBA],'Average')                           # graph of a line rapresenting the average
         fig.savefig(GRAPHS_FOLDER + 'avgNoAck.png')                                # of all the runs
         plt.close(fig)
 
@@ -89,7 +89,7 @@ for pkt_length in PKT_LENGTHS:
         allBaRuns.append(graphsBA)
 
         fig = plt.figure(figsize=(12, 6)) 
-        makePlot(fig,graphsBA,MIN,MAX,'Raw Data')                           # graph of all the runs without changes
+        makePlot(fig,graphsBA,'Raw Data')                           # graph of all the runs without changes
         fig.savefig(GRAPHS_FOLDER + 'normalAck.png')
         plt.close(fig)
 
@@ -100,7 +100,7 @@ for pkt_length in PKT_LENGTHS:
             smoothedBA.append(smoothGraph(graph,SMOOTH_CONST))
 
         fig = plt.figure(figsize=(12, 6))
-        makePlot(fig,smoothedBA,MIN,MAX,'Smoothed')                         # graph of all the runs smoothed using
+        makePlot(fig,smoothedBA,'Smoothed')                         # graph of all the runs smoothed using
         fig.savefig(GRAPHS_FOLDER + 'smoothedAck.png')                             # the SMOOTH_CONST constant
         plt.close(fig)
 
@@ -110,7 +110,7 @@ for pkt_length in PKT_LENGTHS:
         medieAck.append(avgBA)
 
         fig = plt.figure(figsize=(12, 6))
-        makePlot(fig,[avgBA],MIN,MAX,'Average')                             # graph of a line rapresenting the average
+        makePlot(fig,[avgBA],'Average')                             # graph of a line rapresenting the average
         fig.savefig(GRAPHS_FOLDER + 'avgAck.png')                                  # of all the runs
         plt.close(fig)
 
@@ -120,7 +120,6 @@ for pkt_length in PKT_LENGTHS:
         fig = plt.figure(figsize=(12, 6))
         plt.plot(avgBA[0] ,avgBA[1])
         plt.plot(avgNoBA[0] ,avgNoBA[1])
-        plt.ylim([MIN, MAX])
         plt.suptitle('Comparison', fontsize=24)                             # graph comparing the average of the runs
         plt.savefig(GRAPHS_FOLDER + 'Comparison.png')                              # with BlockAck to those without it 
         plt.close(fig)
@@ -130,7 +129,7 @@ for pkt_length in PKT_LENGTHS:
 
 
     fig = plt.figure(figsize=(12, 6))
-    makePlot(fig,medieAck,MIN,MAX,'Comparison of BA sessions')              # graph with the avereges of all the runs
+    makePlot(fig,medieAck,'Comparison of BA sessions')              # graph with the avereges of all the runs
     fig.savefig("./graphs/"+str(pkt_length)+"B/ComparisonAllAvg.png")       # by time based on the BA_THRESHOLDS
     plt.close(fig)                                                           
 
@@ -147,17 +146,15 @@ for pkt_length in PKT_LENGTHS:
     for g in medieAck:
         medieDelleMedie.append(sum(g[1])/len(g[1]))
 
-    figure = plt.figure(figsize=(13, 6))
-    #plt.ylim([2500000, 4000000])
-    plt.ylim([MIN, MAX])                                                       # bar graph with the avereges of all the runs
+    figure = plt.figure(figsize=(13, 6))                                # bar graph with the avereges of all the runs
     plt.suptitle('Comparison of BA sessions', fontsize=24)                     # based on the BA_THRESHOLDS
-    plt.xticks(BA_THRESHOLDS)                                                           # added a line rappresenting the average of the
+    plt.xticks(BA_THRESHOLDS)                                                  # added a line rappresenting the average of the
     colors = ['green', 'blue', 'purple',                                       # runs without BlockAck for comparison
               'brown', 'teal', 'pink', 
               'red', 'orange', 'green', 
               'grey','green', 'blue', 
               'purple', 'brown', 'teal']
-    plt.bar(range(4,65,4),medieDelleMedie, color = colors)
+    plt.bar(range(4,65,4),medieDelleMedie, color = colors,width=2)
 
     plt.plot(range(0,69,4) ,[sum(avgNoBA[1])/len(avgNoBA[1])]*18,color = 'black')
 
