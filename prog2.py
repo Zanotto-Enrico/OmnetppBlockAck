@@ -87,7 +87,7 @@ colors = ['green', 'blue', 'purple',
             'brown', 'teal', 'pink', 'red']
 plt.grid()
 plt.barh(ind,gains, color = colors)
-plot.set_xticks([*range(0,80,10)], ["0%","10%","20%","30%","40%","50%","60%","70%"])
+plot.set_xticks([*range(0,180,20)], ["0%","20%","40%","60%","80%","100%","120%","140%","160%"])
 plot.set_yticks(ind, NAMES2)
 plot.set_axisbelow(True)
 
@@ -98,3 +98,4 @@ plot.yaxis.set_label_coords(-0.18, 0.5)
 
 figure.savefig("./BlockAckGains.png")
 plt.close(figure)
+print(gains)
