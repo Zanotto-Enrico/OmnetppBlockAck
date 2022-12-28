@@ -15,12 +15,13 @@ def avgGraph(graphs):
 
     for i in range(0,len(newgraph[0])):
         sum = 0
+        count = 0
         for graph in graphs:
             try:
                 sum = sum + graph[1][i]
             except:
-                sum = sum + 0
-        newgraph[1].append(sum /len(graphs) )
+                count = count -1
+        newgraph[1].append(sum /(len(graphs)+count) )
     return newgraph
 
 
@@ -57,8 +58,7 @@ def parseVectors(csv,startPoint=0):
 
     return graphs
 
-def makePlot(figure, graphs, title,min=None, max=None):
-    plot = figure.add_subplot()
+def makePlot(plot, graphs, title,min=None, max=None):
     for graph in graphs:
         plot.plot(graph[0],graph[1])
     if(min and max):

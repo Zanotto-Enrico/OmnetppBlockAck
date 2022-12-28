@@ -68,19 +68,18 @@ for pkt_length in PKT_LENGTHS:
 
         ###########################################################################  GRAPHS WITHOUT BLOCK ACK
 
-        fig = plt.figure(figsize=(12, 6)) 
-        makePlot(fig,graphsNoBA,'Raw Data')                         # graph of all the runs without changes
-        fig.savefig(GRAPHS_FOLDER + 'normalNoAck.png')
-        plt.close(fig)
+        fig , ax = plt.subplots(1,3, figsize=(28,6)) 
+        ax[0].set_ylabel("Throughput (Mbps)")
+        ax[1].set_xlabel("Time (Sec)")
+        ax[0].xaxis.set_label_coords(0.5,-0.1)
+        ax[0].yaxis.set_label_coords(-0.2,0.5)
 
-        fig = plt.figure(figsize=(12, 6))
-        makePlot(fig,smoothedNoBA,'Smoothed')                       # graph of all the runs smoothed using
-        fig.savefig(GRAPHS_FOLDER + 'smoothedNoAck.png')                           # the SMOOTH_CONST constant
-        plt.close(fig)
+        makePlot(ax[0],graphsNoBA,'Raw Data')                         # graph of all the runs without changes
 
-        fig = plt.figure(figsize=(12, 6))
-        makePlot(fig,[avgNoBA],'Average')                           # graph of a line rapresenting the average
-        fig.savefig(GRAPHS_FOLDER + 'avgNoAck.png')                                # of all the runs
+        makePlot(ax[1],smoothedNoBA,'Smoothed')                       # graph of all the runs smoothed using
+                                                                      # the SMOOTH_CONST constant
+        makePlot(ax[2],[avgNoBA],'Average')                           # graph of a line rapresenting the average
+        fig.savefig(GRAPHS_FOLDER + 'noBlockAck.png')                 # of all the runs
         plt.close(fig)
 
         ########################################################################### GRAPHS WITH BLOCK ACK
@@ -88,30 +87,30 @@ for pkt_length in PKT_LENGTHS:
         graphsBA = parseVectors(yesBA)
         allBaRuns.append(graphsBA)
 
-        fig = plt.figure(figsize=(12, 6)) 
-        makePlot(fig,graphsBA,'Raw Data')                           # graph of all the runs without changes
-        fig.savefig(GRAPHS_FOLDER + 'normalAck.png')
-        plt.close(fig)
+        fig , ax = plt.subplots(1,3, figsize=(28,6)) 
+        ax[0].set_ylabel("Throughput (Mbps)")
+        ax[1].set_xlabel("Time (Sec)")
+        ax[0].xaxis.set_label_coords(0.5,-0.1)
+        ax[0].yaxis.set_label_coords(-0.2,0.5)
+
+        makePlot(ax[0],graphsBA,'RawData')                              # graph of all the runs without changes
 
         ###############################
 
         smoothedBA = []
-        for graph in graphsBA:                                              # smoothing every graph
+        for graph in graphsBA:                                          # smoothing every graph
             smoothedBA.append(smoothGraph(graph,SMOOTH_CONST))
 
-        fig = plt.figure(figsize=(12, 6))
-        makePlot(fig,smoothedBA,'Smoothed')                         # graph of all the runs smoothed using
-        fig.savefig(GRAPHS_FOLDER + 'smoothedAck.png')                             # the SMOOTH_CONST constant
-        plt.close(fig)
+        makePlot(ax[1],smoothedBA,'Smoothed')                           # graph of all the runs smoothed using
+                                                                        # the SMOOTH_CONST constant
 
         ###############################
 
-        avgBA = avgGraph(smoothedBA)                                        # calculating the averages
+        avgBA = avgGraph(smoothedBA)                                    # calculating the averages
         medieAck.append(avgBA)
 
-        fig = plt.figure(figsize=(12, 6))
-        makePlot(fig,[avgBA],'Average')                             # graph of a line rapresenting the average
-        fig.savefig(GRAPHS_FOLDER + 'avgAck.png')                                  # of all the runs
+        makePlot(ax[2],[avgBA],'Average')                               # graph of a line rapresenting the average
+        fig.savefig(GRAPHS_FOLDER + 'BlockAck.png')                     # of all the runs
         plt.close(fig)
 
         ########################################################################### COMPARING BA RUNS WITH NoBA RUNS
@@ -128,8 +127,8 @@ for pkt_length in PKT_LENGTHS:
     ############################################################################### COMPARO LE VARIE Block Ack RUNS
 
 
-    fig = plt.figure(figsize=(12, 6))
-    makePlot(fig,medieAck,'Comparison of BA sessions')              # graph with the avereges of all the runs
+    fig , ax = plt.subplots(figsize=(12,6)) 
+    makePlot(ax,medieAck,'Comparison of BA sessions')              # graph with the avereges of all the runs
     fig.savefig("./graphs/"+str(pkt_length)+"B/ComparisonAllAvg.png")       # by time based on the BA_THRESHOLDS
     plt.close(fig)                                                           
 
