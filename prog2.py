@@ -91,7 +91,7 @@ plot.set_xticks([*range(0,180,20)], ["0%","20%","40%","60%","80%","100%","120%",
 plot.set_yticks(ind, NAMES2)
 plot.set_axisbelow(True)
 
-plt.ylabel("Average Throughput (Mbps)")
+plt.ylabel("UDP segment length")
 plt.xlabel("throughput gains ")
 plot.xaxis.set_label_coords(0.5, -0.08)
 plot.yaxis.set_label_coords(-0.18, 0.5)
